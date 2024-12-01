@@ -16,6 +16,12 @@ fn main() -> std::io::Result<()> {
             col2.push(col.parse::<i64>().unwrap());
         }
     }
-    println!("{col1:?}");
+    let mut s: i64 = 0;
+    col1.sort();
+    col2.sort();
+    for (x, y) in col1.iter().zip(col2.iter()) {
+        s += (x - y).abs();
+    }
+    println!("{s}");
     Ok(())
 }
