@@ -4,6 +4,7 @@ use std::io::prelude::*;
 fn main() -> std::io::Result<()> {
     let (mut col1, mut col2) = parse_input();
     part1(&mut col1, &mut col2);
+    part2(&mut col1, &mut col2);
     Ok(())
 }
 
@@ -35,3 +36,11 @@ fn part1(col1: &mut Vec<i32>, col2: &mut Vec<i32>) {
     println!("Part 1: {s}");
 }
 
+fn part2(col1: &mut Vec<i32>, col2: &mut Vec<i32>) {
+    let mut s: i32 = 0;
+    for val in col1 {
+        let score = col2.iter().filter(|n| *n == val).count() as i32 * *val;
+        s += score;
+    }
+    println!("Part 2: {s}");
+}
