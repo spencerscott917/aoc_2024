@@ -44,9 +44,19 @@ fn row_is_valid(row: &Vec<i32>) -> bool {
 fn part_2(levels: &Vec<Vec<i32>>) {
     let mut num_safe = 0;
     for row in levels {
-
+        if row_is_valid(&row) {
+            num_safe += 1
+        }
+        else {
+            for i in 0..row.len(){
+                let mut row_copy = (*row).clone();
+                row_copy.remove(i);
+                if row_is_valid(&row_copy) {
+                    num_safe += 1;
+                    break;
+                }
+            }
+        }
     }
-
     println!("{num_safe}");
-
 }
