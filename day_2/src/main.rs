@@ -12,7 +12,7 @@ fn main() {
                                          .collect::<Vec<i32>>()})
                          .collect::<Vec<Vec<i32>>>();
     part_1(&levels);
-    part_2(contents.clone());
+    part_2(&levels);
 }
 
 fn part_1(levels: &Vec<Vec<i32>>) {
