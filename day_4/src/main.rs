@@ -16,7 +16,7 @@ fn part_1(chars: &Vec<Vec<char>>) {
         let mut count = 0;
         for row_dir in -1..=1 {
             for col_dir in -1..=1 {
-                let word = get_word(&chars, row_dir, col_dir, row, col, 4); 
+                let word = get_word(&chars, row_dir, col_dir, row, col); 
                 if word == to_match {count += 1}
             }
         }
@@ -38,10 +38,10 @@ fn part_1(chars: &Vec<Vec<char>>) {
 }
 
 
-fn get_word(chars: &Vec<Vec<char>>, row_dir: isize, col_dir: isize, row: isize, col: isize, word_len: i32) -> String {
+fn get_word(chars: &Vec<Vec<char>>, row_dir: isize, col_dir: isize, row: isize, col: isize) -> String {
     let mut word = String::new();
     let (mut curr_row, mut curr_col) = (row, col);
-    for _  in 0..word_len {
+    for _  in 0..4{
         word.push(chars[curr_row as usize][curr_col as usize]);
         curr_row += row_dir;
         curr_col += col_dir;
