@@ -20,8 +20,9 @@ fn main() {
     else {
         fname = args[1].clone();
     }
-    let (rules, updates) = parse_input(&fname);
+    let (rules, mut updates) = parse_input(&fname);
     part_1(&rules, &updates);
+    part_2(&rules, &mut updates);
 }
 
 fn parse_input(fname: &str) -> (Rules, Updates) {
@@ -68,10 +69,27 @@ fn comp_vals(rules: &Rules, key: &i32, to_check: &i32) -> bool {
     false  
 }
 
+fn sort_pages(rules: &Rules, key: &i32, to_check: &i32) -> Ordering {
+    if comp_vals(rules, key, to_check) {
+        return Ordering::Less
+    }
+    Ordering::Greater
+}
+
 fn part_1(rules: &Rules, updates: &Updates) {
     let res: i32 = updates.iter()
-                          .filter(|page| {page.is_sorted_by(|key, to_check| comp_vals(rules, key, to_check))})
-                          .map(|page| page.get(page.len() / 2).unwrap())
+                          .filter(|pages| {pages.is_sorted_by(|key, to_check| comp_vals(rules, key, to_check))})
+                          .map(|pages| pages.get(pages.len() / 2).unwrap())
                           .sum();
     println!("{res}")
+}
+
+fn part_2(rules: &Rules, updates: &mut Updates) {
+    let res: i32 = updates.iter_mut()
+                          .filter(|pages| {!pages.is_sorted_by(|key, to_check| comp_vals(rules, key, to_check))})
+                          .map(|pages| {pages.sort_by(|x, y| sort_pages(rules, x, y));
+                                        pages.get(pages.len() /2).unwrap()})
+                          .sum();
+
+    println!("{res}");
 }
