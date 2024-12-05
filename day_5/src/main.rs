@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::env;
 use std::collections::{HashMap, HashSet};
+use std::cmp::Ordering;
 
 type Rules = HashMap<i32, HashSet<i32>>;
 type Updates = Vec<Vec<i32>>;
@@ -56,5 +57,21 @@ fn parse_input(fname: &str) -> (Rules, Updates) {
     (rules, updates)
 }
 
+fn comp_vals(rules: &Rules, key: &i32, to_check: &i32) -> bool {
+    let vals = rules.get(&key).unwrap();
+    if key == to_check {
+        return false 
+    }
+    else if vals.contains(&to_check) {
+        return true
+    }
+    false  
+}
+
 fn part_1(rules: &Rules, updates: &Updates) {
+    let res: i32 = updates.iter()
+                          .filter(|page| {page.is_sorted_by(|key, to_check| comp_vals(rules, key, to_check))})
+                          .map(|page| page.get(page.len() / 2).unwrap())
+                          .sum();
+    println!("{res}")
 }
