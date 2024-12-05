@@ -12,7 +12,13 @@ enum Parsing {
 
 fn main() {
     let args: Vec<String>  = env::args().collect();
-    let fname = args[1].clone();
+    let fname: String;
+    if args.len() < 2 {
+        fname = String::from("input/input.txt");
+    }
+    else {
+        fname = args[1].clone();
+    }
     let (rules, updates) = parse_input(&fname);
     part_1(&rules, &updates);
 }
