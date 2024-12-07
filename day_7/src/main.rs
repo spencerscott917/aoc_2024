@@ -15,7 +15,7 @@ fn part_1(contents: &str) {
         if let Some((target, vals)) = line.split_once(":") {
             let target = target.parse::<u64>().unwrap();
             let vals = vals.split_whitespace().map(|x| x.parse::<u64>().unwrap()).collect();
-            if recur_p1(&vals, 0, vals[0], target) {
+            if check_vals(&vals, 0, vals[0], target, false) {
                 total += target
             }
         }
@@ -29,7 +29,7 @@ fn part_2(contents: &str) {
         if let Some((target, vals)) = line.split_once(":") {
             let target = target.parse::<u64>().unwrap();
             let vals = vals.split_whitespace().map(|x| x.parse::<u64>().unwrap()).collect();
-            if recur_p2(&vals, 0, vals[0], target) {
+            if check_vals(&vals, 0, vals[0], target, true) {
                 total += target;
             } 
         }
@@ -54,30 +54,17 @@ impl Op {
 }
 }
 
-fn recur_p1(vals: &Vec<u64>, i: usize, curr: u64, target: u64) -> bool {
+fn check_vals(vals: &Vec<u64>, i: usize, curr: u64, target: u64, with_concat: bool) -> bool {
     if i == vals.len() - 1 {
         return curr == target
     }
-    if recur_p1(vals, i+1, Op::Add.apply(curr, vals[i+1]), target) {
+    if check_vals(vals, i+1, Op::Add.apply(curr, vals[i+1]), target, with_concat) {
         return true
     }
-    if recur_p1(vals, i+1, Op::Mul.apply(curr, vals[i+1]), target) {
+    if check_vals(vals, i+1, Op::Mul.apply(curr, vals[i+1]), target, with_concat) {
         return true
     }
-    false
-}
-
-fn recur_p2(vals: &Vec<u64>, i: usize, curr: u64, target: u64) -> bool {
-    if i == vals.len() - 1 {
-        return curr == target
-    }
-    if recur_p2(vals, i+1, Op::Add.apply(curr, vals[i+1]), target) {
-        return true
-    }
-    if recur_p2(vals, i+1, Op::Mul.apply(curr, vals[i+1]), target) {
-        return true
-    }
-    if recur_p2(vals, i+1, Op::Concat.apply(curr, vals[i+1]), target) {
+    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, vals[i+1]), target, with_concat) {
         return true
     }
     false
