@@ -7,37 +7,40 @@ fn main() {
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
 
+    let input = contents.lines()
+                        .map(|line| line.split_once(":").unwrap())
+                        .map(|(target, vals)| (target.parse::<u64>().unwrap(), 
+                                               vals.split_whitespace()
+                                                   .map(|val| val.parse::<u64>().unwrap())
+                                                   .collect::<Vec<u64>>()))
+                        .collect();
+
     let now = Instant::now();
-    part_1(&contents);
+    part_1(&input);
     let elapsed = now.elapsed();
     println!("Completed Part 1 in {elapsed:.2?}");
 
     let now = Instant::now();
-    part_2(&contents);
+    part_2(&input);
     let elapsed = now.elapsed();
     println!("Completed Part 1 in {elapsed:.2?}");
 }
 
-fn part_1(contents: &str) {
-    solve(&contents, false);
+fn part_1(input: &Vec<(u64, Vec<u64>)>) {
+    solve(&input, false);
 }
 
-fn part_2(contents: &str) {
-    solve(&contents, true);
+fn part_2(input: &Vec<(u64, Vec<u64>)>) {
+    solve(&input, true);
 }
 
-fn solve(contents: &str, use_concat: bool) {
-    let total: u64 = contents.lines()
-                             .map(|line| line.split_once(":").unwrap())
-                             .map(|(target, vals)| (target.parse::<u64>().unwrap(), 
-                                                    vals.split_whitespace()
-                                                        .map(|val| val.parse::<u64>().unwrap())
-                                                        .collect::<Vec<u64>>()))
-                             .filter(|(target, vals)| {
-                                 check_vals(&vals, 0, vals[0], *target, use_concat)
-                             })
-                             .map(|(target, _)| target)
-                             .sum();
+fn solve(input: &Vec<(u64, Vec<u64>)>, use_concat: bool) {
+    let total: u64 = input.iter()
+                          .filter(|(target, vals)| {
+                                 check_vals(&vals, 0, vals[0], target, use_concat)
+                          })
+                          .map(|(target, _)| target)
+                          .sum();
     println!("{total}");
 }
 
@@ -59,17 +62,20 @@ impl Op {
 }
 }
 
-fn check_vals(vals: &Vec<u64>, i: usize, curr: u64, target: u64, with_concat: bool) -> bool {
+fn check_vals(vals: &Vec<u64>, i: usize, curr: u64, target: &u64, with_concat: bool) -> bool {
     if i == vals.len() - 1 {
-        return curr == target
+        return curr == *target
     }
-    if check_vals(vals, i+1, Op::Add.apply(curr, vals[i+1]), target, with_concat) {
+    if curr > *target {
+        return false
+    }
+    if check_vals(vals, i+1, Op::Add.apply(curr, vals[i+1]), &target, with_concat) {
         return true
     }
-    if check_vals(vals, i+1, Op::Mul.apply(curr, vals[i+1]), target, with_concat) {
+    if check_vals(vals, i+1, Op::Mul.apply(curr, vals[i+1]), &target, with_concat) {
         return true
     }
-    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, vals[i+1]), target, with_concat) {
+    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, vals[i+1]), &target, with_concat) {
         return true
     }
     false
