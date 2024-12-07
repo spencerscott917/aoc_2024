@@ -69,14 +69,16 @@ fn check_vals(vals: &Vec<u64>, i: usize, curr: u64, target: &u64, with_concat: b
     if curr > *target {
         return false
     }
-    if check_vals(vals, i+1, Op::Add.apply(curr, vals[i+1]), &target, with_concat) {
+    let next = vals[i+1];
+    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, next), &target, with_concat) {
         return true
     }
-    if check_vals(vals, i+1, Op::Mul.apply(curr, vals[i+1]), &target, with_concat) {
+    if check_vals(vals, i+1, Op::Mul.apply(curr, next), &target, with_concat) {
         return true
     }
-    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, vals[i+1]), &target, with_concat) {
+    if check_vals(vals, i+1, Op::Add.apply(curr, next), &target, with_concat) {
         return true
     }
+    
     false
 }
