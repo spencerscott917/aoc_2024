@@ -1,41 +1,47 @@
 use std::fs::File;
 use std::io::prelude::*;
+use std::time::Instant;
 
 fn main() {
     let mut file = File::open("input/input.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
+
+    let now = Instant::now();
     part_1(&contents);
+    let elapsed = now.elapsed();
+    println!("Completed Part 1 in {elapsed:.2?}");
+
+    let now = Instant::now();
     part_2(&contents);
+    let elapsed = now.elapsed();
+    println!("Completed Part 1 in {elapsed:.2?}");
 }
 
 fn part_1(contents: &str) {
-    let mut total = 0;
-    for line in contents.lines() {
-        if let Some((target, vals)) = line.split_once(":") {
-            let target = target.parse::<u64>().unwrap();
-            let vals = vals.split_whitespace().map(|x| x.parse::<u64>().unwrap()).collect();
-            if check_vals(&vals, 0, vals[0], target, false) {
-                total += target
-            }
-        }
-    }
-    println!("{total}")
+    solve(&contents, false);
 }
 
 fn part_2(contents: &str) {
-    let mut total = 0;
-    for line in contents.lines() {
-        if let Some((target, vals)) = line.split_once(":") {
-            let target = target.parse::<u64>().unwrap();
-            let vals = vals.split_whitespace().map(|x| x.parse::<u64>().unwrap()).collect();
-            if check_vals(&vals, 0, vals[0], target, true) {
-                total += target;
-            } 
-        }
-    }
-    println!("{total}")
+    solve(&contents, true);
 }
+
+fn solve(contents: &str, use_concat: bool) {
+    let total: u64 = contents.lines()
+                             .map(|line| line.split_once(":").unwrap())
+                             .map(|(target, vals)| (target.parse::<u64>().unwrap(), 
+                                                    vals.split_whitespace()
+                                                        .map(|val| val.parse::<u64>().unwrap())
+                                                        .collect::<Vec<u64>>()))
+                             .filter(|(target, vals)| {
+                                 check_vals(&vals, 0, vals[0], *target, use_concat)
+                             })
+                             .map(|(target, _)| target)
+                             .sum();
+    println!("{total}");
+}
+
+
 
 enum Op {
     Add,
@@ -48,8 +54,7 @@ impl Op {
         match self {
             Op::Add => { lhs + rhs },
             Op::Mul => { lhs * rhs },
-            Op::Concat => {
-                lhs * 10_u64.pow(rhs.ilog10() + 1) + rhs}
+            Op::Concat => { lhs * 10_u64.pow(rhs.ilog10() + 1) + rhs }
     }
 }
 }
