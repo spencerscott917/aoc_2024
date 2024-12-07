@@ -29,9 +29,7 @@ fn part_2(contents: &str) {
         if let Some((target, vals)) = line.split_once(":") {
             let target = target.parse::<u64>().unwrap();
             let vals = vals.split_whitespace().map(|x| x.parse::<u64>().unwrap()).collect();
-            if recur_p1(&vals, 0, vals[0], target) {
-                total += target;
-            } else if recur_p2(&vals, 0, vals[0], target) {
+            if recur_p2(&vals, 0, vals[0], target) {
                 total += target;
             } 
         }
