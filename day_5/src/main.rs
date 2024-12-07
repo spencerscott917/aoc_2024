@@ -59,11 +59,11 @@ fn parse_input(fname: &str) -> (Rules, Updates) {
 }
 
 fn comp_vals(rules: &Rules, key: &i32, to_check: &i32) -> bool {
-    let vals = rules.get(&key).unwrap();
+    let vals = rules.get(key).unwrap();
     if key == to_check {
         return false 
     }
-    else if vals.contains(&to_check) {
+    else if vals.contains(to_check) {
         return true
     }
     false  
