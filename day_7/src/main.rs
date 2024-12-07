@@ -3,6 +3,7 @@ use std::io::prelude::*;
 use std::time::Instant;
 
 fn main() {
+    let now = Instant::now();
     let mut file = File::open("input/input.txt").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
@@ -15,15 +16,10 @@ fn main() {
                                                    .collect::<Vec<u64>>()))
                         .collect();
 
-    let now = Instant::now();
     part_1(&input);
-    let elapsed = now.elapsed();
-    println!("Completed Part 1 in {elapsed:.2?}");
-
-    let now = Instant::now();
     part_2(&input);
     let elapsed = now.elapsed();
-    println!("Completed Part 1 in {elapsed:.2?}");
+    println!("Completed in {elapsed:.2?}");
 }
 
 fn part_1(input: &Vec<(u64, Vec<u64>)>) {
@@ -37,10 +33,10 @@ fn part_2(input: &Vec<(u64, Vec<u64>)>) {
 fn solve(input: &Vec<(u64, Vec<u64>)>, use_concat: bool) {
     let total: u64 = input.iter()
                           .filter(|(target, vals)| {
-                                 check_vals(&vals, 0, vals[0], target, use_concat)
+                                 check_vals(&vals[1..], vals[0], *target, use_concat)
                           })
                           .map(|(target, _)| target)
-                          .sum();
+                          .sum::<u64>();
     println!("{total}");
 }
 
@@ -62,23 +58,18 @@ impl Op {
 }
 }
 
-fn check_vals(vals: &Vec<u64>, i: usize, curr: u64, target: &u64, with_concat: bool) -> bool {
-    if i == vals.len() - 1 {
-        return curr == *target
-    }
-    if curr > *target {
+fn check_vals(vals: &[u64], curr: u64, target: u64, with_concat: bool) -> bool {
+    if curr > target {
         return false
     }
-    let next = vals[i+1];
-    if with_concat && check_vals(vals, i+1, Op::Concat.apply(curr, next), &target, with_concat) {
-        return true
+    match vals {
+        [] => return curr == target,
+        [n] =>  return Op::Mul.apply(curr, *n) == target ||
+               (with_concat && Op::Concat.apply(curr, *n) == target ) ||
+                Op::Add.apply(curr, *n) == target,
+        [n, rest @ ..] => return check_vals(rest, Op::Add.apply(curr, *n), target, with_concat) ||
+                                 check_vals(rest, Op::Mul.apply(curr, *n), target, with_concat) ||
+                                 (with_concat && check_vals(rest, Op::Concat.apply(curr, *n), target, with_concat))
+
     }
-    if check_vals(vals, i+1, Op::Mul.apply(curr, next), &target, with_concat) {
-        return true
-    }
-    if check_vals(vals, i+1, Op::Add.apply(curr, next), &target, with_concat) {
-        return true
-    }
-    
-    false
 }
