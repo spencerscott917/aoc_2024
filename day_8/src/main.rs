@@ -117,7 +117,6 @@ fn add2d_checked(arr1: &[isize; 2], arr2: &[isize; 2], row_bound: &usize, col_bo
     }
 }
 
-
 fn parse_input(fname: &str) -> Grid {
     let mut file = File::open(fname).unwrap_or_else(|_| panic!("Could not open file {}", fname));
     let mut contents = String::new();
